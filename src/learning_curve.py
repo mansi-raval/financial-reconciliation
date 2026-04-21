@@ -48,7 +48,7 @@ def run_curve(fractions=(0.1, 0.2, 0.3, 0.5, 0.8), seed: int = 0):
     # Baseline: hand-tuned weights, no training
     baseline_scores = combine_with_weights(fs, DEFAULT_WEIGHTS)
     baseline_matches = hungarian_match(baseline_scores, fs)
-    baseline_metrics = evaluate(baseline_matches, bank, check)
+    baseline_metrics = evaluate(baseline_matches, bank, check, total_responsible=len(bank))
     print(f"{'baseline (no training)':30s}  "
           f"P={baseline_metrics['precision']:.4f}  R={baseline_metrics['recall']:.4f}  "
           f"F1={baseline_metrics['f1']:.4f}")
@@ -63,7 +63,7 @@ def run_curve(fractions=(0.1, 0.2, 0.3, 0.5, 0.8), seed: int = 0):
         clf = train_logreg(fs, bank["gt_id"].to_numpy(), check["gt_id"].to_numpy(), train_pairs)
         scores = score_with_logreg(fs, clf)
         matches = hungarian_match(scores, fs)
-        m = evaluate(matches, bank, check)
+        m = evaluate(matches, bank, check, total_responsible=len(bank))
         results.append({"train_frac": frac, "train_n": k, **m})
         print(f"train_frac={frac:>4.0%} (n={k:>4d})          "
               f"P={m['precision']:.4f}  R={m['recall']:.4f}  F1={m['f1']:.4f}")
